@@ -46,7 +46,6 @@ const TablesPanel = () => {
   const [overlay, setOverlay] = useState(false);
   const [selectedMaxNumOfGuests, setSelectedMaxNumOfGuests] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
-  const [tableId, setTableId] = useState(0);
 
   // =========== table ID used to create new order ============
   const [tableId, setTableId] = useState(null);
@@ -150,7 +149,6 @@ const TablesPanel = () => {
                         setModalOpen(true);
                         setOverlay(true);
                         setTableId(filteredTable.id);
-
                       }}
                     >
                       <span className="text-3xl text-[#0f766e]">

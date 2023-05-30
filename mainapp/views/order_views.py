@@ -82,11 +82,9 @@ def addDishToOrder(request):
 
   
     
-    order = Order.objects.get(id=data['body']['order'])      
-    dish = Dish.objects.get(id=data['body']['dish'])
-    qty = int(data['body']['qty'])
-
-    print
+    order = Order.objects.get(id=data['order'])      
+    dish = Dish.objects.get(id=data['dish'])
+    qty = int(data['qty'])
 
     orderedDishes = OrderDish.objects.filter(order=order)
     print(orderedDishes)
@@ -105,7 +103,7 @@ def addDishToOrder(request):
 
         )
 
-    order.totalPrice = float(order.totalPrice) + float(data['body']['price'])
+    order.totalPrice = float(order.totalPrice) + float(data['price'])
     order.save()
       
     serializer = OrderDishSerializer(dishToOrder, many=False)
@@ -123,25 +121,39 @@ def changeDishQty(request,pk):
 
     if request.method == "POST":
        
-       #Get dish to change qty
+       #Get chenged dish qty
         dishToChange = OrderDish.objects.get(id=pk)
   
         orderedDishQtyBeforeChange = dishToChange.qty
-        
+       
         #new value of qty
         dishToChange.qty = data['qty']
        
        #get order contains dish to change
         order = Order.objects.get(id=dishToChange.order.id)
-        #CHanging dish qty in order
-        if orderedDishQtyBeforeChange < dishToChange.qty:
-            order.totalPrice = round((float(order.totalPrice) + float(dishToChange.dish.price)),2)
-        else:
-            order.totalPrice = round((float(order.totalPrice) - float(dishToChange.dish.price)),2)
-        #if new qty value is 0, delete dish from order
+
+        #Change total proce of order afte qty was changed
+
+        #Check if new aty value is different from zero
+        if dishToChange.qty != 0:
+              
+            # if new qty value is greater than old 
+            if orderedDishQtyBeforeChange < dishToChange.qty:
+                #set difference in dish qty 
+                qtyDifference =  data['qty']-orderedDishQtyBeforeChange 
+                order.totalPrice = round((float(order.totalPrice) + float(dishToChange.dish.price *qtyDifference)),2)
+        
+             # if new qty value is less than old 
+            if orderedDishQtyBeforeChange > dishToChange.qty:
+                #set difference in dish qty 
+                qtyDifference = orderedDishQtyBeforeChange - data['qty']
+                order.totalPrice = round((float(order.totalPrice) - float(dishToChange.dish.price * qtyDifference)),2)
+  
+        #if new qty is equal to zero
         if dishToChange.qty == 0:
-           
+            order.totalPrice = round((float(order.totalPrice) - float(dishToChange.dish.price * orderedDishQtyBeforeChange)),2)
             dishToChange.delete()
+            order.save()
                  
             return Response("Element deleted")
         

@@ -11,7 +11,6 @@ import {
   addToOrder,
   removeFromOrder,
   deleteFromOrder,
-  increaseDishQty,
 } from "../../actions/ordersActions";
 import { listCategories } from "../../actions/categoriesActions";
 import { LoginMessageComponent } from "../../components/LoginMessageComponent";
@@ -200,7 +199,7 @@ export default function Order() {
                         aria-label="add"
                         disabled={isDisabled}
                         onClick={() => {
-                          dispatch(increaseDishQty(filteredDish, id));
+                          // dispatch(increaseDishQty(filteredDish, id));
                           setIsDisabled(true);
                           buttonHandler();
                         }}

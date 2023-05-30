@@ -1,16 +1,20 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+
 import { createOrder } from "../../actions/ordersActions";
+
 import { BsFillBackspaceFill } from "react-icons/bs";
 const ModalTablesPanel = ({
   closeModal,
   selectedMaxNumOfGuests,
   closeOverlay,
+
   tableId,
 }) => {
   console.log(`console log z ModalTablesPanel ${selectedMaxNumOfGuests}`);
   const [numOfGuests, setNumOFGuests] = useState("");
   const dispatch = useDispatch();
+
   //if numOfGuests is not empty (numOfGuests !== ''), or if numOfGuests is empty and the selected value is not 0 (numOfGuests === '' && value !== 0), then the value will be appended to numOfGuests. This ensures that 0 can only be selected as the second digit, given that the first digit is not 0.
 
   const Number = ({ value }) => {
@@ -104,9 +108,11 @@ const ModalTablesPanel = ({
             className={`rounded bg-primary-bg-color text-white font-bold py-1 px-4 ${
               numOfGuests > selectedMaxNumOfGuests ? "opacity-50" : ""
             }`}
+
             onClick={() => {
               dispatch(createOrder(tableId));
             }}
+
           >
             Done
           </button>

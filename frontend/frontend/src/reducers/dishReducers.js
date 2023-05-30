@@ -77,8 +77,9 @@ export const orderDishReducer = (state = { orderDishes: [] }, action) => {
 
     // Change qty of selected dish
     case CHANGE_DISH_QTY:
+      console.log(state.orderDishes);
       return {
-        state,
+        ...state,
         orderDishes: [...state.orderDishes],
       };
 
@@ -125,6 +126,9 @@ export const orderDishReducer = (state = { orderDishes: [] }, action) => {
       return { loading: true, orderDishes: [] };
 
     case ORDER_DISH_LIST_SUCCESS:
+
+      console.log("ACTION PAYLOAD IN ORDER DISH ", action.payload);
+
       return { loading: false, orderDishes: action.payload };
 
     case ORDER_DISH_LIST_FAIL:

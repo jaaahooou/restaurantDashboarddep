@@ -8,14 +8,14 @@ import DishMenu from "./screens/DishMenu";
 import Tables from "./screens/Tables";
 import Orders from "./screens/orders/index";
 import Admin from "./screens/admin";
-import Order from "./screens/order";
+import TablesMap from "./screens/tablesMap";
 import Staff from "./screens/staff";
 import Login from "./screens/login";
 import Services from "./screens/services";
 import StartingPanel from "./screens/startingPanel";
 import OrderNew from "./screens/orderNew";
 // import SideBarComponent from './components/SideBarComponent';
-import Invoices from "./screens/invoices";
+
 import Invite from "./screens/invite";
 import { red, purple } from "@mui/material/colors";
 import TablesPanel from "./screens/tablesPanel";
@@ -44,10 +44,10 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/dishmenu" element={<DishMenu />} />
               <Route path="/tables" element={<Tables />} />
+              <Route path="/tables_map" element={<TablesMap />} />
               <Route path="/orders" element={<Orders />} />
               <Route path="orders/order/:id" element={<OrdersPanel />} />
               <Route path="/staff" element={<Staff />} />
-              <Route path="/invoices" element={<Invoices />} />
               <Route path="/invite" element={<Invite />} />
               <Route path="/ordernew" element={<OrderNew />} />
               <Route path="/start" element={<StartingPanel />} />

@@ -20,6 +20,7 @@ const NewCategory = () => {
   const [selectedColor, setSelectedColor] = useState('');
   const [openListDishes, setOpenListDishes] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState([]);
+  const [openNewProductPanel, setOpenNewProductPanel] = useState(false);
   const handleColorClick = (color) => {
     setSelectedColor(color);
   };
@@ -111,32 +112,38 @@ const NewCategory = () => {
               >
                 + Add from list
               </button>
-              <button className="border border-[#cbd5e1]  py-1 px-3 text-sm my-2 text-[#0369a1] font-bold hover:bg-[#f1f5f9]">
+              <button
+                onClick={() => setOpenNewProductPanel(!openNewProductPanel)}
+                className="border border-[#cbd5e1]  py-1 px-3 text-sm my-2 text-[#0369a1] font-bold hover:bg-[#f1f5f9]"
+              >
                 + Add new product
               </button>
             </div>
           </div>
-          <div className="py-2 flex flex-wrap  items-center gap-2 text-sm">
-            <label className="font-bold flex items-center gap-2" htmlFor="">
-              Product Name:
-              <input
-                className="border border-[#cbd5e1] py-1 pl-1 font-normal"
-                type="text"
-                placeholder="Provide Name"
-              />
-            </label>
-            <label className="font-bold flex items-center gap-2" htmlFor="">
-              Product Price:
-              <input
-                className="border border-[#cbd5e1] py-1 pl-1 font-normal"
-                type="text"
-                placeholder="Provide price"
-              />
-            </label>
-            <button className="border w-[110px] border-[#cbd5e1]  py-1 px-3 text-sm my-2 text-[#0369a1] font-bold rounded-md hover:bg-[#f1f5f9]">
-              + Add
-            </button>
-          </div>
+          {openNewProductPanel && (
+            <div className="py-2 flex flex-wrap  items-center gap-2 text-sm">
+              <label className="font-bold flex items-center gap-2" htmlFor="">
+                Product Name:
+                <input
+                  className="border border-[#cbd5e1] py-1 pl-1 font-normal"
+                  type="text"
+                  placeholder="Provide Name"
+                />
+              </label>
+              <label className="font-bold flex items-center gap-2" htmlFor="">
+                Product Price:
+                <input
+                  className="border border-[#cbd5e1] py-1 pl-1 font-normal"
+                  type="text"
+                  placeholder="Provide price"
+                />
+              </label>
+              <button className="border  border-[#cbd5e1]  py-1 px-3 text-sm my-2 text-[#0369a1] font-bold rounded-md hover:bg-[#f1f5f9]">
+                + Add
+              </button>
+            </div>
+          )}
+
           <div className="my-4 ">
             <div className="grid grid-cols-3 border-b border-[#cbd5e1] ">
               <span className="text-sm font-bold pl-2">Name</span>

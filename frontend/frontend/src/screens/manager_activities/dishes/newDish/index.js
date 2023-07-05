@@ -12,13 +12,6 @@ const NewDish = () => {
     dispatch(listCategories());
   }, []);
 
-  const [openColorPicker, setOpenColorPicker] = useState(false);
-  const [selectedColor, setSelectedColor] = useState('');
-
-  const handleColorClick = (color) => {
-    setSelectedColor(color);
-  };
-
   return (
     // <div className="flex flex-col md:flex-row">
     <div className="flex flex-col relative h-screen w-full">

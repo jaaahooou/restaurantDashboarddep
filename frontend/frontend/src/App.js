@@ -5,7 +5,7 @@ import { createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Dashboard from './screens/dashboard';
 import DishMenu from './screens/DishMenu';
-
+import Tables from './screens/manager_activities/tables';
 import Orders from './screens/orders/index';
 import Admin from './screens/admin';
 import TablesMap from './screens/tablesMap';
@@ -14,6 +14,7 @@ import SignIn from './screens/login';
 import Services from './screens/services';
 import StartingPanel from './screens/startingPanel';
 import Invite from './screens/invite';
+import { red, purple } from '@mui/material/colors';
 import TablesPanel from './screens/tablesPanel';
 import OrdersPanel from './screens/ordersPanel';
 import LaborList from './screens/manager_activities/labor/laborsList';
@@ -24,7 +25,7 @@ import NewCategory from './screens/manager_activities/dishes/newCategory';
 import NewRoom from './screens/manager_activities/tables/addRoom';
 import NewLabor from './screens/manager_activities/labor/newLabor';
 import EditLabor from './screens/manager_activities/labor/editLabor';
-
+import LoginPin from './screens/loginPIN';
 function App() {
   return (
     <>
@@ -54,6 +55,7 @@ function App() {
               <Route path="/menu" element={<CategoriesList />} />
               <Route path="/add-category" element={<NewCategory />} />
               <Route path="/add-room" element={<NewRoom />} />
+              <Route path="/login-pin" element={<LoginPin />} />
             </Routes>
           </main>
         </div>

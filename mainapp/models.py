@@ -13,6 +13,8 @@ class Employee(models.Model):
     email = models.CharField(max_length=200, blank=True, null=True)
     phone = models.IntegerField(null=True, blank=True)
     position = models.CharField(max_length=20, default="BARTENDER")
+    isCashier = models.BooleanField(default=False)
+    isDriver = models.BooleanField(default=False)
 
 
     def __str__(self):
@@ -73,9 +75,10 @@ class Order(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     isDone = models.BooleanField(null=False, blank=False, default=False)
     isBrought = models.BooleanField(null=False, blank=False, default=False)
+    isActive = models.BooleanField(null=False, blank=False, default = True)
     tip = models.FloatField(default=0.00, blank=True)
     totalPrice = models.DecimalField(max_digits=7, decimal_places =2, null=True, blank=True,default=0)
-   
+    roomName = models.CharField(max_length=200,default="")
 
     def __str__(self):
         return str(self.id)
@@ -85,6 +88,8 @@ class OrderDish(models.Model):
     dish = models.ForeignKey(Dish, on_delete=models.SET_NULL, null=True, blank = True, related_name='logs')
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank = True)
     qty = models.IntegerField(null=True, blank=True, default=0)
+    isActive = models.BooleanField(null=False, blank=False, default = False)
+    isDone = models.BooleanField(null=False, blank=False, default=False)
     
     
 

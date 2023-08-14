@@ -3,13 +3,11 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useParams } from "react-router-dom";
-
 import { listDishes } from "../../actions/dishActions";
 import {
   getOrderDetails,
   changeDishQty,
   addToOrder,
-  deleteFromOrder,
   listOrders,
 } from "../../actions/ordersActions";
 import { listCategories } from "../../actions/categoriesActions";
@@ -43,11 +41,11 @@ const OrdersPanel = () => {
 
   const dishList = useSelector((state) => state.dishList);
   const { error: dishListError, loading: dishListloading, dishes } = dishList;
-  console.log(dishes);
+
   const categoriesList = useSelector((state) => state.categoriesList);
 
   const { categoriesError, categoriesLoading, categories } = categoriesList;
-  console.log(categories);
+
   const userLogin = useSelector((state) => state.userLogin);
   const {
     error: userLoginError,
@@ -74,7 +72,6 @@ const OrdersPanel = () => {
         (dishToDisplay) => dishToDisplay.id == filteredDish.dish
       );
       const dishToDisplay = dishToDisplayArr[0];
-
       setDishNameToDisplay(dishToDisplay);
       setdishToChange(filteredDish);
       setDishQty(filteredDish.qty);
@@ -104,7 +101,7 @@ const OrdersPanel = () => {
     if (dishQty > 0) {
       dispatch(changeDishQty(dishToChange, dishQty, id, dishNameToDisplay));
     } else {
-      dispatch(deleteFromOrder(dishToChange));
+      //dispatch(deleteFromOrder(dishToChange));
       dispatch(changeDishQty(dishToChange, dishQty, id, dishNameToDisplay));
     }
   };
@@ -122,14 +119,14 @@ const OrdersPanel = () => {
     const config = {
       headers: {
         "Content-type": "application/json",
-      },
-      body: {
-        isPaid: true,
+        Authorization: "Bearer " + String(userInfo.access),
       },
     };
 
+    const body = { isPaid: true };
     const { setOrderAsPaid } = await axios.post(
       `/orders/update-order/${id}`,
+      body,
       config
     );
 
@@ -155,9 +152,7 @@ const OrdersPanel = () => {
             <p>{userInfo.first_name}</p>
           </section>
           <section className="grid grid-cols-5 border-b-2 border-gray-light py-1  bg-[#e2e8f0] ">
-            {/* <section className="flex justify-between px-2 text-sm font-bold border-b-2 border-gray-light py-1"> */}
             <span className="col-start-1 col-end-3 font-bold pl-2">Name</span>
-            {/* <span className="w-half col-start-1 col-end-3 ">Name</span> */}
 
             <span className="text-center font-bold">QTY</span>
             <span className="text-center font-bold">EACH</span>
@@ -170,7 +165,6 @@ const OrdersPanel = () => {
                 <div
                   key={filteredDish.id}
                   className=" grid grid-cols-5 border-b-2 border-gray-light pb-1"
-                  // className=" flex justify-between items-center w-full bg-secondary-bg-color border  px-2"
                   onClick={() => {
                     setDishToDisplay(filteredDish);
                   }}
@@ -271,7 +265,7 @@ const OrdersPanel = () => {
           <section className="flex flex-nowrap justify-between items-center gap-2 px-1 border-b h-14 border-x-1 bg-white">
             <div className="flex gap-2">
               <button
-                className="w-16 h-12 w-9 font-bold border-2 rounded-sm border-black text-lg"
+                className="h-12 w-9 font-bold border-2 rounded-sm border-black text-lg"
                 onClick={() => {
                   decrementDishQty();
                 }}
@@ -280,12 +274,12 @@ const OrdersPanel = () => {
               </button>
               {/* // ============= SECTION: Display QTY of selected dish ================ */}
 
-              <button className=" w-16 h-12 w-9 font-bold">{dishQty}</button>
+              <button className=" w-16 h-12 font-bold">{dishQty}</button>
 
               {/* // ============= END SECTION: Display QTY of selected dish ================ */}
 
               <button
-                className=" w-16 h-12 w-9 font-bold border-2 rounded-sm border-black"
+                className="  h-12 w-9 font-bold border-2 rounded-sm border-black"
                 onClick={() => {
                   incrementDishQty();
                 }}
@@ -331,8 +325,6 @@ const OrdersPanel = () => {
             </span>
           </section>
 
-          {/* <section className="grid grid-cols-3 grid-flow-row px-2 py-4 bg-secondary-bg-color gap-2  "> */}
-          {/* <section className="grid auto-cols-[calc(30%_-_4rem)]  grid-flow-col gap-4 overflow-x-auto  "> */}
           <section className="relative flex items-center ">
             {/* // ============= SECTION: Display Categories ================ */}
             <div className="w-screen h-full  overflow-auto whitespace-nowrap scroll-smooth py-4 md:grid md:grid-cols-4 gap-y-2 bg-white">

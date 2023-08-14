@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   TABLES_LIST_REQUEST,
   TABLES_LIST_SUCCESS,
@@ -11,178 +12,106 @@ import {
   REMOVE_TABLE,
 } from "../constants/tablesConstants";
 
-import axios from "axios";
+// Helper function for JWT authorization headers
+const getAuthConfig = () => {
+  const userInfo = JSON.parse(localStorage.userInfo);
+  return {
+    headers: {
+      "Content-type": "application/json",
+      Authorization: `Bearer ${userInfo.access}`,
+    },
+  };
+};
 
-// ================= Get list of tables in restaurant ===========
+// Helper function for error handling
+const handleError = (error, dispatch, actionType) => {
+  const errorMessage =
+    error.response && error.response.data.message
+      ? error.response.data.message
+      : error.message;
+  dispatch({ type: actionType, payload: errorMessage });
+};
 
 export const listTables = () => async (dispatch) => {
   try {
-    dispatch({
-      type: TABLES_LIST_REQUEST,
-    });
-
-    // ================= JWT Authorization data ===========
-
-    let userInfo = JSON.parse(localStorage.userInfo);
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-        Authorization: "Bearer " + String(userInfo.access),
-      },
-    };
-
+    dispatch({ type: TABLES_LIST_REQUEST });
+    const config = getAuthConfig();
     const { data } = await axios.get("/orders/get-tables", config);
-
-    dispatch({
-      type: TABLES_LIST_SUCCESS,
-      payload: data,
-    });
+    dispatch({ type: TABLES_LIST_SUCCESS, payload: data });
   } catch (error) {
-    dispatch({
-      type: TABLES_LIST_FAIL,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
-    });
+    handleError(error, dispatch, TABLES_LIST_FAIL);
   }
 };
-
-// ================= Get list of rooms in restaurant ===========
 
 export const listRooms = () => async (dispatch) => {
   try {
-    dispatch({
-      type: ROOMS_LIST_REQUEST,
-    });
-
-    // ================= JWT Authorization data ===========
-
-    let userInfo = JSON.parse(localStorage.userInfo);
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-        Authorization: "Bearer " + String(userInfo.access),
-      },
-    };
-
+    dispatch({ type: ROOMS_LIST_REQUEST });
+    const config = getAuthConfig();
     const { data } = await axios.get("/orders/get-rooms", config);
-
-    dispatch({
-      type: ROOMS_LIST_SUCCESS,
-      payload: data,
-    });
+    dispatch({ type: ROOMS_LIST_SUCCESS, payload: data });
   } catch (error) {
-    dispatch({
-      type: ROOMS_LIST_FAIL,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
-    });
+    handleError(error, dispatch, ROOMS_LIST_FAIL);
   }
 };
 
-// ================= Create new table in restaurant ===========
 export const createNewTable =
   (room, numberOfPersons, tables, rooms) => async (dispatch) => {
-    function findTableRoom(tableRoom) {
-      return tableRoom.name === room;
-    }
-
-    // Find table room
-    let roomObject = rooms.find(function (filteredRoom) {
-      return filteredRoom.name == room;
-    });
-
-    //table array is used to get number of next table
-    let tableArray = tables.filter(function (filteredTable) {
-      return filteredTable.room === roomObject.id;
-    });
-
-    const tableRoomToSend = rooms.find(findTableRoom);
-
-    // Data to be sent to the backend
-    const tableData = {
-      room: tableRoomToSend,
-      tableNumber: tableArray.length,
-      numberOfPersons: numberOfPersons,
-      isOccupied: false,
-    };
     try {
-      dispatch({
-        type: CREATE_NEW_TABLE,
-        payload: {
-          tableData,
-          tables,
-        },
-      });
+      dispatch({ type: CREATE_NEW_TABLE });
+
+      const roomObject = rooms.find(
+        (filteredRoom) => filteredRoom.name === room
+      );
+
+      const tableArray = tables.filter(
+        (filteredTable) => filteredTable.room === roomObject.id
+      );
+
+      const tableData = {
+        room: roomObject,
+        tableNumber: tableArray.length,
+        numberOfPersons: numberOfPersons,
+        isOccupied: false,
+      };
+      dispatch({ type: CREATE_NEW_TABLE, payload: { tableData, tables } });
 
       const body = {
         tableData: tableData,
       };
-      // ================= JWT Authorization data ===========
-      let userInfo = JSON.parse(localStorage.userInfo);
-      const config = {
-        headers: {
-          "Content-type": "application/json",
-          Authorization: "Bearer " + String(userInfo.access),
-        },
-      };
+      const config = getAuthConfig();
+      const response = await axios.post(
+        "orders/create-new-table",
+        body,
+        config
+      );
 
-      // Sending data to backend
-      const { data } = await axios
-        .post("orders/create-new-table", body, config)
-        .then(function (response) {
-          if (response.status == 200) {
-            //if response is 200, list tables again. It`s nesesary to get the correct table ID
-            alert("Create Table status: OK");
-            dispatch(listTables());
-          } else {
-            alert("Something went wrong, status code: ", response.status);
-          }
-        });
+      if (response.status === 200) {
+        alert("Create Table status: OK");
+        dispatch(listTables());
+      } else if (response.status === 403) {
+        alert("You don't have permission to do that");
+      } else {
+        alert("Something went wrong, status code: " + response.status);
+      }
     } catch (error) {
-      dispatch({
-        type: REMOVE_TABLE_FAIL,
-        payload:
-          error.response && error.response.data.message
-            ? error.response.data.message
-            : error.message,
-      });
+      handleError(error, dispatch, CREATE_NEW_TABLE_FAIL);
     }
   };
 
-export const removeTable = (table, tables) => async (dispatch) => {
-  const tablesAfterRemove = tables.filter((el) => el.id != table.id);
-
+export const removeTable = (id) => async (dispatch) => {
   try {
-    dispatch({
-      type: REMOVE_TABLE,
-      payload: {
-        tablesAfterRemove,
-      },
-    });
+    const config = getAuthConfig();
+    const response = await axios.delete(`orders/remove-table/${id}`, config);
 
-    // delete table - request
-    const { data } = await axios
-      .delete(`orders/remove-table/${table.id}`)
-      .then(function (response) {
-        if (response.status == 200) {
-          alert("Table removed");
-          // Get all tables again after remove
-          dispatch(listTables());
-        } else {
-          alert("Something went wrong, status code: ", response.status);
-        }
-      });
+    if (response.status === 200) {
+      alert("Table removed");
+      dispatch(listTables());
+    } else if (response.status === 403) {
+      alert("You don't have permission to do that");
+    } else {
+      alert("Something went wrong, status code: " + response.status);
+    }
   } catch (error) {
-    dispatch({
-      type: CREATE_NEW_TABLE_FAIL,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
-    });
+    handleError(error, dispatch, REMOVE_TABLE_FAIL);
   }
 };

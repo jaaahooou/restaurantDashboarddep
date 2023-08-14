@@ -99,7 +99,7 @@ const TablesPanel = () => {
             {/* TABLES RENDERING
         1. Object tables is .filter by table.room 
         2. Acquired array is .map to filteredTable
-        3. If filteredTable isOccupied filteredTable is has new styling sugesting his state: border: "2px dashed red"
+        3. If filteredTable isOccupied filteredTable has new styling sugesting his state: border: "2px dashed red"
         */}
 
             {tables

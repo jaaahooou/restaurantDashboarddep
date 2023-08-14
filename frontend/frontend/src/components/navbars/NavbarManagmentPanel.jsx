@@ -1,78 +1,102 @@
 import React, { useState } from 'react';
-import { FaUser } from 'react-icons/fa';
-import { BiUserCircle } from 'react-icons/bi';
-import { MdTableBar, MdMenuBook, MdOutlineKeyboardArrowDown, MdFastfood } from 'react-icons/md';
-import { RiArrowGoBackFill } from 'react-icons/ri';
-import { GiCook } from 'react-icons/gi';
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { NavLink } from 'react-router-dom';
 
+import { BiUserCircle } from 'react-icons/bi';
+import {
+  MdTableBar,
+  MdOutlineKeyboardArrowDown,
+  MdFastfood,
+} from 'react-icons/md';
+
+import { GiCook } from 'react-icons/gi';
+import LogoutIcon from '@mui/icons-material/Logout';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { logout } from '../../actions/userActions';
+import { useSelector, useDispatch } from 'react-redux';
 const NavbarManagmentPanel = () => {
   let navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState(0);
-  const [buttonActive, setButtonActive] = useState(false); 
+  let dispatch = useDispatch();
+  const [logoutPanel, setLogoutPanel] = useState(false);
   const userLogin = useSelector((state) => state.userLogin);
   const {
     error: userLoginError,
     loading: userLoginLoading,
     userInfo,
   } = userLogin;
-  // const handleTabChange = (index) => {
-  //   setActiveTab(index);
-  // };
-
-  const handleButtonClick = (buttonIndex) => {
-    setActiveTab(buttonIndex);
-    setButtonActive(true); // Ustawienie stanu przycisku na aktywny
-  };
-
-  // const handleButtonBlur = () => {
-  //   setButtonActive(false); // Ustawienie stanu przycisku na nieaktywny
-  // };
 
   return (
-    <main className='flex flex-col'>
-      <section className='flex justify-between shadow-md text-[#6b7280]'>
-        {/* <div className="flex items-center gap-2">
-        <RiArrowGoBackFill/>
-            <span className='font-bold'>Back</span>
-        </div> */}
+    <main className="flex flex-col ">
+      <section className="flex justify-between shadow-md text-[#6b7280] relative">
         <button className="flex items-center justify-center text-center bg-primary-bg-color w-[40px]">
-          <GiCook className='text-white text-2xl' />
+          <GiCook
+            onClick={() => {
+              navigate('/services');
+            }}
+            className="text-white text-2xl"
+          />
         </button>
-        <div className="flex p-2 gap-1 items-center">
-          <span className='flex gap-1 items-center text-sm'>
-            <BiUserCircle className='text-2xl' /> {userInfo.first_name}
-          </span>
-          <span className='p-1'>
-            <MdOutlineKeyboardArrowDown className='font-bold' />
-          </span>
-        </div>
-      </section>
-      <section className='flex md:hidden w-screen justify-around text-xl  shadow-md text-[#6b7280]'>
-             <NavLink to='/menu'
-          className={({isActive}) => (isActive ? 'py-2 px-4 flex flex-col items-center bg-secondary-bg-color' : 'py-2 px-4 flex flex-col items-center') }
-          // onClick={() => {handleButtonClick(1); navigate("/menu")}}
-          // onBlur={handleButtonBlur}
+        <div
+          // onClick={() => {
+          //   setLogoutPanel(!logoutPanel);
+          // }}
+          className="flex p-2 gap-1 items-center"
         >
-          <MdFastfood/>
-          <span className='text-xs'>Products</span>
+          <span className="flex gap-1 items-center text-sm cursor-pointer">
+            <BiUserCircle className="text-2xl " />
+            {userInfo.first_name}
+            <button className="p-2">
+              <LogoutIcon
+                onClick={() => {
+                  dispatch(logout());
+                  navigate('/');
+                }}
+              />
+            </button>
+          </span>
+          {/* <span className="p-1">
+            <MdOutlineKeyboardArrowDown className="font-bold" />
+          </span> */}
+        </div>
+        {/* {logoutPanel && (
+          <button className="text-sm bg-white py-1 px-3 absolute top-8 right-3 border rounded hover:font-bold w-20 hover:bg-primary-bg-color hover:text-white">
+            Logout
+          </button>
+        )} */}
+      </section>
+      <section className="flex md:hidden w-screen justify-around text-xl  shadow-md text-[#6b7280]">
+        <NavLink
+          to="/menu"
+          className={({ isActive }) =>
+            isActive
+              ? 'py-2 px-4 flex flex-col items-center bg-secondary-bg-color'
+              : 'py-2 px-4 flex flex-col items-center'
+          }
+        >
+          <MdFastfood />
+          <span className="text-xs">Products</span>
         </NavLink>
-        
-        <NavLink to='/employess'
-          className={({isActive}) => (isActive ? 'py-2 px-4 flex flex-col items-center bg-secondary-bg-color' : 'py-2 px-4 flex flex-col items-center') }
-        
+
+        <NavLink
+          to="/employess"
+          className={({ isActive }) =>
+            isActive
+              ? 'py-2 px-4 flex flex-col items-center bg-secondary-bg-color'
+              : 'py-2 px-4 flex flex-col items-center'
+          }
         >
           <GiCook />
-          <span className='text-xs'>Employess</span>
+          <span className="text-xs">Employess</span>
         </NavLink>
-   
-        <NavLink to='/tablesList'
-         className={({isActive}) => (isActive ? 'py-2 px-4 flex flex-col items-center bg-secondary-bg-color' : 'py-2 px-4 flex flex-col items-center') }
+
+        <NavLink
+          to="/tablesList"
+          className={({ isActive }) =>
+            isActive
+              ? 'py-2 px-4 flex flex-col items-center bg-secondary-bg-color'
+              : 'py-2 px-4 flex flex-col items-center'
+          }
         >
           <MdTableBar />
-          <span className='text-xs'>Tables</span>
+          <span className="text-xs">Tables</span>
         </NavLink>
       </section>
     </main>

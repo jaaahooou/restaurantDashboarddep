@@ -52,7 +52,8 @@ export const listOrderDishes = (id) => async (dispatch) => {
 
     const config = getAuthConfig();
     const { data } = await axios.get("/dishes/get-order-dishes", config);
-    const orderedDishes = data.filter((el) => el.order === id);
+
+    const orderedDishes = data.filter((el) => el.order == id);
 
     dispatch({
       type: ORDER_DISH_LIST_SUCCESS,

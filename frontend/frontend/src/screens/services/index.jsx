@@ -7,15 +7,34 @@ import { listRooms } from '../../actions/tablesActions';
 import { listTables } from '../../actions/tablesActions';
 import { listActiveOrderDishes } from '../../actions/dishActions';
 import { listOrders } from '../../actions/ordersActions';
-import { MdOutlineTableBar, MdTableBar, MdFastfood } from 'react-icons/md';
-import { GiCook } from 'react-icons/gi';
-
 import { GoListOrdered } from 'react-icons/go';
 const Services = () => {
   let navigate = useNavigate();
   const dispatch = useDispatch();
   const userLogin = useSelector((state) => state.userLogin);
   const { error, loading, userInfo } = userLogin;
+  const buttonData = [
+    {
+      label: 'Menu Management',
+      onClick: () => {
+        navigate('/menu');
+      },
+    },
+    {
+      label: 'Employees Management',
+      onClick: () => {
+        navigate('/employees');
+      },
+    },
+    {
+      label: 'Rooms Management',
+      onClick: () => {
+        navigate('/tablesList');
+        dispatch(listRooms());
+        dispatch(listTables());
+      },
+    },
+  ];
 
   return loading ? (
     <CircularProgress color="secondary" />
@@ -59,34 +78,18 @@ const Services = () => {
             <div className="text-xl text-center text-white bg-[#629D93] p-1">
               <h1>Manager Activities</h1>
             </div>
-            <div className="grid grid-cols-2 grid-rows-2 gap-2">
-              <button
-                className="flex flex-col p-8 justify-center items-center  bg-white text-center  rounded shadow"
-                onClick={() => {
-                  navigate('/menu');
-                }}
-              >
-                <MdFastfood className="text-6xl font-bold" /> Menu Managment
-              </button>
-              <button
-                onClick={() => {
-                  navigate('/employess');
-                }}
-                className="flex flex-col p-8 justify-center items-center  bg-white text-center  rounded shadow"
-              >
-                <GiCook className="text-6xl font-bold" /> Employees Managment
-              </button>
 
-              <button
-                className="flex flex-col p-8 justify-center items-center  bg-white text-center  rounded shadow"
-                onClick={() => {
-                  navigate('/tablesList');
-                  dispatch(listRooms());
-                  dispatch(listTables());
-                }}
-              >
-                <MdTableBar className="text-6xl font-bold" /> Rooms Managment
-              </button>
+            <div className="grid grid-cols-2 grid-rows-2 gap-1">
+              {buttonData.map((button, index) => (
+                <button
+                  key={index}
+                  className="flex justify-center items-center bg-white text-center font-bold text-xl p-8"
+                  onClick={button.onClick}
+                >
+                  {button.label}
+                </button>
+              ))}
+
             </div>
           </div>
         </div>

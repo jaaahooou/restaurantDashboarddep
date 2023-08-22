@@ -168,9 +168,7 @@ const PendingOrders = () => {
                                                             filteredDishToDisplay.id
                                                           }
                                                         >
-                                                          {' '}
                                                           <div>
-                                                            {' '}
                                                             {
                                                               filteredDishToDisplay.title
                                                             }
@@ -191,7 +189,6 @@ const PendingOrders = () => {
                                       {/* =========== Buttons - Ready to go / Close ============== */}
                                       {activeDishSetAsReady && (
                                         <div className="flex flex-col gap-2">
-                                          {' '}
                                           <button
                                             className="font-bold text-sm text-center border border-primary-bg-color  rounded py-2"
                                             style={{ backgroundColor: 'white' }}

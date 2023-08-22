@@ -1,28 +1,28 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import CircularProgress from "@mui/material/CircularProgress";
-import { useParams } from "react-router-dom";
-import { listDishes } from "../../actions/dishActions";
+import React from 'react';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useParams } from 'react-router-dom';
+import { listDishes } from '../../actions/dishActions';
 import {
   getOrderDetails,
   changeDishQty,
   addToOrder,
   listOrders,
-} from "../../actions/ordersActions";
-import { listCategories } from "../../actions/categoriesActions";
-import { listOrderDishes } from "../../actions/dishActions";
-import { updatePaymentMethod } from "../../actions/ordersActions";
+} from '../../actions/ordersActions';
+import { listCategories } from '../../actions/categoriesActions';
+import { listOrderDishes } from '../../actions/dishActions';
+import { updatePaymentMethod } from '../../actions/ordersActions';
 
-import NavbarOrders from "../../components/navbars/NavbarOrders";
+import NavbarOrders from '../../components/navbars/NavbarOrders';
 
-import RemoveIcon from "@mui/icons-material/Remove";
-import AddIcon from "@mui/icons-material/Add";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
+import RemoveIcon from '@mui/icons-material/Remove';
+import AddIcon from '@mui/icons-material/Add';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const OrdersPanel = () => {
   const dispatch = useDispatch();
@@ -53,8 +53,8 @@ const OrdersPanel = () => {
     userInfo,
   } = userLogin;
   // First states of SECTION:  Change order QTY
-  const [dishToChange, setdishToChange] = useState("-");
-  const [dishNameToDisplay, setDishNameToDisplay] = useState("-");
+  const [dishToChange, setdishToChange] = useState('-');
+  const [dishNameToDisplay, setDishNameToDisplay] = useState('-');
 
   const [dishQty, setDishQty] = useState(0);
 
@@ -62,8 +62,8 @@ const OrdersPanel = () => {
 
   //First state of active category and dish
   const [activeCategory, setActiveCategory] = useState(0);
-  const [activeCategoryColour, setActiveCategoryColour] = useState("white");
-  const [activeDish, setActiveDish] = useState("");
+  const [activeCategoryColour, setActiveCategoryColour] = useState('white');
+  const [activeDish, setActiveDish] = useState('');
 
   // Setting states of dish to display in SECTION:  Change order QTY
   const setDishToDisplay = (filteredDish) => {
@@ -118,8 +118,8 @@ const OrdersPanel = () => {
   const setOrderAsPaid = async () => {
     const config = {
       headers: {
-        "Content-type": "application/json",
-        Authorization: "Bearer " + String(userInfo.access),
+        'Content-type': 'application/json',
+        Authorization: 'Bearer ' + String(userInfo.access),
       },
     };
 
@@ -130,10 +130,37 @@ const OrdersPanel = () => {
       config
     );
 
-    navigate("/services");
+    navigate('/services');
     //list orders after close old order
     dispatch(listOrders());
   };
+
+  const columnHeaders = ['Name', 'QTY', 'EACH', 'TOTAL'];
+  const buttons = [
+    {
+      label: 'Cash',
+      icon: <AttachMoneyIcon />,
+      backgroundColor: '#00D100',
+      onClick: () => {
+        dispatch(updatePaymentMethod(id, 'CASH'));
+      },
+    },
+    {
+      label: 'Card',
+      icon: <CreditCardIcon />,
+      backgroundColor: '#1877F2',
+      onClick: () => {
+        dispatch(updatePaymentMethod(id, 'CARD'));
+      },
+    },
+    {
+      label: 'Set as paid and remove',
+      backgroundColor: '#00a8e8',
+      onClick: () => {
+        setOrderAsPaid(id);
+      },
+    },
+  ];
 
   return loading ? (
     <CircularProgress color="secondary" />
@@ -151,12 +178,17 @@ const OrdersPanel = () => {
             </div>
             <p>{userInfo.first_name}</p>
           </section>
-          <section className="grid grid-cols-5 border-b-2 border-gray-light py-1  bg-[#e2e8f0] ">
-            <span className="col-start-1 col-end-3 font-bold pl-2">Name</span>
-
-            <span className="text-center font-bold">QTY</span>
-            <span className="text-center font-bold">EACH</span>
-            <span className="text-center font-bold">TOTAL</span>
+          <section className="grid grid-cols-5 border-b-2 border-gray-light py-1 bg-[#e2e8f0]">
+            {columnHeaders.map((header, index) => (
+              <span
+                key={index}
+                className={`${
+                  index === 0 ? 'col-start-1 col-end-3' : 'text-center'
+                } font-bold ${index !== 0 ? 'px-2' : 'pl-2'}`}
+              >
+                {header}
+              </span>
+            ))}
           </section>
           {/* // ============= SECTION: Display ordered dishes ================ */}
           {orderDishes ? (
@@ -218,35 +250,17 @@ const OrdersPanel = () => {
           {/* // ============= END SECTION: Display ordered dishes ================ */}
 
           <section className="flex justify-items-stretch justify-center py-2 bg-white gap-0.5 border-b h-20 md:h-[150px]">
-            <button
-              className="w-[100px] grow font-bold  py-1"
-              style={{ backgroundColor: "#00D100" }}
-              onClick={() => {
-                dispatch(updatePaymentMethod(id, "CASH"));
-              }}
-            >
-              Cash
-              <AttachMoneyIcon />
-            </button>
-            <button
-              className="w-[100px] grow font-bold  py-1"
-              style={{ backgroundColor: "#1877F2" }}
-              onClick={() => {
-                dispatch(updatePaymentMethod(id, "CARD"));
-              }}
-            >
-              Card
-              <CreditCardIcon />
-            </button>
-            <button
-              className="w-[100px] grow  font-bold  py-1"
-              style={{ backgroundColor: "#00a8e8" }}
-              onClick={() => {
-                setOrderAsPaid(id);
-              }}
-            >
-              Set as paid and remove
-            </button>
+            {buttons.map((button, index) => (
+              <button
+                key={index}
+                className="w-[100px] grow font-bold py-1"
+                style={{ backgroundColor: button.backgroundColor }}
+                onClick={button.onClick}
+              >
+                {button.label}
+                {button.icon}
+              </button>
+            ))}
           </section>
           <section className="flex justify-between bg-white p-2 border-b ">
             <div className="flex flex-wrap justify-between items-center font-bold gap-4 ">
@@ -291,15 +305,15 @@ const OrdersPanel = () => {
               <button
                 type=""
                 className="uppercase shadow-xl text-sm font-bold text-center min-w-[80px] h-[40px]  text-ellipsis whitespace-nowrap overflow-hidden px-2 hover:opacity-70"
-                style={{ backgroundColor: "#00a8e8" }}
+                style={{ backgroundColor: '#00a8e8' }}
                 onClick={() => {
                   // dishNameToDisplay - dish from menu with 'price' table in data base
                   //dishToCHange - dish from order with 'qty' table in data base
 
                   //If there is no dishNameToDisplay or dishToChange, don`t do anything
                   //after "DONE" is cklicked
-                  if (dishNameToDisplay != "-" || dishToChange != "-") {
-                    if (dishToChange != "-") {
+                  if (dishNameToDisplay != '-' || dishToChange != '-') {
+                    if (dishToChange != '-') {
                       sendDishQty();
                     } else {
                       dispatch(addToOrder(dishNameToDisplay, id, dishQty));
@@ -315,7 +329,7 @@ const OrdersPanel = () => {
             </div>
           </section>
           <section className="py-2 bg-white">
-            {" "}
+            {' '}
             <span className="text-s font-bold text-center">
               {dishNameToDisplay.title ? (
                 <div>{dishNameToDisplay.title}</div>
@@ -332,11 +346,11 @@ const OrdersPanel = () => {
                 <button
                   key={category.id}
                   className={`uppercase text-sm w-[100px] md:w-auto inline-block mx-1  ${
-                    activeCategory == category.id ? "border-b-4" : ""
+                    activeCategory == category.id ? 'border-b-4' : ''
                   } shadow-lg font-bold text-center  h-[60px] text-ellipsis whitespace-nowrap  px-2 hover:opacity-70 `}
                   style={{
                     backgroundColor: `${category.colour}`,
-                    borderColor: "white",
+                    borderColor: 'white',
                   }}
                   onClick={() => {
                     setActiveCategory(category.id);
@@ -360,16 +374,16 @@ const OrdersPanel = () => {
                 <button
                   style={{
                     backgroundColor: `${activeCategoryColour}`,
-                    borderColor: "white",
+                    borderColor: 'white',
                   }}
                   onClick={() => {
-                    setdishToChange("-");
+                    setdishToChange('-');
                     setActiveDish(dishToDisplay);
                     setDishToDisplay(dishToDisplay);
                   }}
                   key={dishToDisplay.id}
                   className={`${
-                    activeDish == dishToDisplay ? "border-b-4" : ""
+                    activeDish == dishToDisplay ? 'border-b-4' : ''
                   } uppercase shadow-xl text-sm font-bold text-center min-w-[80px] h-[60px]  text-ellipsis whitespace-nowrap overflow-hidden px-2 hover:opacity-70`}
                 >
                   {dishToDisplay.title}

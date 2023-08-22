@@ -4,13 +4,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import NavbarManagmentPanel from '../../../../components/navbars/NavbarManagmentPanel';
 import NavbarManagmentPanelSide from '../../../../components/navbars/NavbarManagmentPanelSide';
 import CircularProgress from '@mui/material/CircularProgress';
-import { listTables, listRooms } from '../../../../actions/tablesActions';
-import { createRoom } from '../../../../actions/roomsActions';
-import { createNewTable, removeTable } from '../../../../actions/tablesActions';
-import { removeRoom } from '../../../../actions/roomsActions';
+
+import {
+  createNewTable,
+  removeTable,
+  listTables,
+  listRooms,
+} from '../../../../actions/tablesActions';
+import { createRoom, removeRoom } from '../../../../actions/roomsActions';
+
 import { FaRegTrashAlt } from 'react-icons/fa';
 import ClearIcon from '@mui/icons-material/Clear';
 import { CgLayoutGrid } from 'react-icons/cg';
+import RoomListItem from './RoomListItem';
+import RoomRemovalModal from './RoomRemovalModal';
+import TableRemovalModal from './TableRemovalModal';
 
 const TablesList = () => {
   const roomsList = useSelector((state) => state.roomsList);
@@ -33,17 +41,18 @@ const TablesList = () => {
   const [activeTable, setActiveTable] = useState('');
 
   //INITIAL STATE OF NUMBER OF GUESTS, NEEDED TO ADD NEW TABLE
-  const [numberOfGusets, setnumberOfGusets] = useState(1);
+  const [numberOfGuests, setNumberOfGuests] = useState(1);
 
   // WHO KNOWS WHAT IS THIS??
   const [roomRemoval, setRoomRemoval] = useState(false);
   const [tableRemoval, setTableRemoval] = useState(false);
   const [overlay, setOverlay] = useState(false);
 
+  console.log(roomRemoval);
   const handleTableSubmit = (e) => {
     e.preventDefault();
 
-    dispatch(createNewTable(activeRoom, numberOfGusets, tables, rooms));
+    dispatch(createNewTable(activeRoom, numberOfGuests, tables, rooms));
   };
 
   const dispatch = useDispatch();
@@ -51,6 +60,30 @@ const TablesList = () => {
     dispatch(listTables());
     dispatch(listRooms());
   }, []);
+
+  const handleAddRoomButtonClick = () => {
+    setAddRoomIsActive(!addRoomIsActive);
+    if (addRoomIsActive) {
+      if (newRoomName !== '') {
+        dispatch(createRoom(newRoomName, rooms));
+        setTimeout(() => {
+          window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth',
+          });
+        }, 500);
+      } else {
+        setAddRoomIsActive(!addRoomIsActive);
+      }
+    }
+  };
+
+  const handleRoomRemoval = (roomId) => {
+    setActiveRoom(roomId);
+    setRoomRemoval(true);
+    setOverlay(true);
+  };
+
   return loading ? (
     <CircularProgress color="secondary" />
   ) : error ? (
@@ -82,22 +115,7 @@ const TablesList = () => {
 
           <button
             className="border h-8 place-self-start border-[#cbd5e1]  py-1 px-3 text-sm my-2 text-[#0369a1] font-bold rounded-md hover:bg-[#f1f5f9] shadow"
-            onClick={() => {
-              setAddRoomIsActive(!addRoomIsActive);
-              if (addRoomIsActive) {
-                if (newRoomName != '') {
-                  dispatch(createRoom(newRoomName, rooms));
-                  setTimeout(() => {
-                    window.scrollTo({
-                      top: document.body.scrollHeight,
-                      behavior: 'smooth',
-                    });
-                  }, 500);
-                } else {
-                  setAddRoomIsActive(!addRoomIsActive);
-                }
-              }
-            }}
+            onClick={handleAddRoomButtonClick}
           >
             {addRoomIsActive ? '+ Add' : '+ Add room'}
           </button>
@@ -109,201 +127,48 @@ const TablesList = () => {
           </header>
           {/*  */}
           {roomsList ? (
-            <>
-              {' '}
-              {rooms.map((room) => (
-                //  DISPLAY ROOM NAMES
-                <div key={room.id} className="flex flex-col ">
-                  <div className="flex justify-between px-2  py-2 border-b border-white">
-                    <div
-                      key={room.id}
-                      className="uppercase text-sm font-bold text-[#6b7280]"
-                    >
-                      {room.name}
-                    </div>
-                    <button
-                      className="text-[#6b7280] hover:text-[#dc2626] cursor-pointer text-xs font-bold hover:underline"
-                      type=""
-                      onClick={() => {
-                        setRoomRemoval(true);
-                        setOverlay(true);
-                        setActiveRoom(room.id);
-                      }}
-                    >
-                      Delete Room
-                    </button>
-                  </div>
-                  {/* // DISPLAY TABLES */}
-                  <div className="grid grid-cols-3 px-2 font-bold py-2   text-sm ">
-                    <p>Table Number</p>
-                    <p>Max Guests</p>
-                    <p className="place-self-center">Remove</p>
-                  </div>
-                  {tables
-                    .filter((table) => table.room === room.id)
-                    .map((filteredTable, index) => (
-                      <div
-                        key={filteredTable.id}
-                        className="grid grid-cols-3 px-2  py-2 text-sm text-[#6b7280] shadow "
-                        style={{
-                          backgroundColor:
-                            index % 2 === 1 ? 'white' : '#f1f5f9',
-                        }}
-                      >
-                        <p className="font-bold ">
-                          {filteredTable.tableNumber}
-                        </p>
-                        <p>{filteredTable.numberOfPersons}</p>
-                        <p
-                          className=" cursor-pointer place-self-center text-[#6b7280]  hover:text-[#dc2626] text-lg   px-2 py-1 font-bold hover:underline  "
-                          onClick={() => {
-                            setActiveTable(filteredTable.id);
-                            setTableRemoval(true);
-                            setOverlay(true);
-                          }}
-                        >
-                          <FaRegTrashAlt />
-                        </p>
-                      </div>
-                    ))}
-                  {/* SECTION : ADD TABLE */}
-                  <div className="flex items-center gap-2">
-                    {/* SHOW INPUT IF 'ADD TABLE' BUTOON WAS CLICKED */}
-                    {activeRoom == `${room.name}` ? (
-                      <>
-                        <form
-                          onSubmit={(e) => {
-                            handleTableSubmit(e, rooms, tables);
-                          }}
-                          className="flex gap-2 items-center"
-                        >
-                          <label>Number of guests</label>
-                          <select
-                            name="languages"
-                            id="lang"
-                            onChange={(e) => {
-                              // set number of guests
-                              setnumberOfGusets(e.target.value);
-                            }}
-                            className="p-2"
-                          >
-                            {/* CHOOSE NUMBER OF GUESTS */}
-                            {Array.apply(0, Array(9)).map(function (x, i) {
-                              return (
-                                <option key={i + 1} value={i + 1}>
-                                  {i + 1}
-                                </option>
-                              );
-                            })}
-                          </select>
-                          {/* SUBMIT BUTTON */}
-                          <button
-                            type="submit"
-                            className="border h-8 place-self-start border-[#cbd5e1]  py-1 px-3 text-sm my-2 text-[#0369a1] font-bold rounded-md hover:bg-[#f1f5f9]"
-                          >
-                            Add
-                          </button>
-                        </form>
-                        {/* CANCEL BUTTON - SET ACTIVE ROOM TO '' */}
-                        <button
-                          className="border h-8 place-self-start border-[#cbd5e1]  py-1 px-3 text-sm my-2 text-[#0369a1] font-bold rounded-md hover:bg-[#f1f5f9]"
-                          onClick={() => {
-                            setActiveRoom('');
-
-                            if (newRoomName != '') {
-                              console.log('add table');
-                            }
-                          }}
-                        >
-                          Cancel
-                        </button>
-                      </>
-                    ) : (
-                      // SET ACTIVE ROOM TO ROOM NAME
-                      <button
-                        data-key={room.name}
-                        className="border h-8 place-self-start border-[#cbd5e1]  py-1 px-3 text-sm my-2 text-[#0369a1] font-bold rounded-md hover:bg-[#f1f5f9] shadow"
-                        onClick={(e) => {
-                          console.log(e.target.getAttribute('data-key'));
-
-                          setActiveRoom(e.target.getAttribute('data-key'));
-                        }}
-                      >
-                        + Add table
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </>
+            rooms.map((room) => (
+              <RoomListItem
+                key={room.id}
+                room={room}
+                tables={tables}
+                activeRoom={activeRoom}
+                numberOfGuests={numberOfGuests}
+                newRoomName={newRoomName}
+                setActiveRoom={setActiveRoom}
+                setActiveTable={setActiveTable}
+                setRoomRemoval={setRoomRemoval}
+                setTableRemoval={setTableRemoval}
+                setOverlay={setOverlay}
+                handleRoomRemoval={handleRoomRemoval}
+                handleTableSubmit={handleTableSubmit}
+                setNumberOfGuests={setNumberOfGuests}
+              />
+            ))
           ) : (
             <CircularProgress color="secondary" />
           )}
         </section>
         {/* ======= SECTION - REMOVE ROOM WITH TABLES FROM DATABASE ================= */}
         {roomRemoval && (
-          <div className="fixed z-50 top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-            <main className="bg-white p-4 max-w-[400px] w-full">
-              <b className="">
-                Do you want to remove room and all tables inside?
-              </b>
-              <div className="flex justify-between gap-2">
-                {' '}
-                <button
-                  onClick={() => {
-                    setRoomRemoval(false);
-                    setOverlay(false);
-                    dispatch(removeRoom(activeRoom));
-                  }}
-                  className="border border-[#b91c1c] text-[#b91c1c] py-1 px-3 text-sm my-2  font-bold"
-                >
-                  Confirm
-                </button>
-                <button
-                  onClick={() => {
-                    setRoomRemoval(false);
-                    setOverlay(false);
-                  }}
-                  className="border border-[#cbd5e1]  py-1 px-3 text-sm my-2 text-[#0369a1] font-bold"
-                >
-                  Cancel
-                </button>
-              </div>
-            </main>
-          </div>
+          <RoomRemovalModal
+            activeRoom={activeRoom}
+            setRoomRemoval={setRoomRemoval}
+            setOverlay={setOverlay}
+            removeRoom={removeRoom}
+          />
         )}
-
         {/* ===== SECTION - REMOVE ROOM WITH TABLES FROM DATABASE =============== END ========= */}
         {/* =================== REMOVE TABLE MODAL ================= */}
         {tableRemoval && (
-          <div className="fixed z-50 top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center">
-            <main className="bg-white p-4 max-w-[400px] w-full">
-              <b className="">Do you want to remove this table?</b>
-              <div className="flex justify-between gap-2">
-                {' '}
-                <button
-                  onClick={() => {
-                    setTableRemoval(false);
-                    setOverlay(false);
-                    dispatch(removeTable(activeTable));
-                  }}
-                  className="border border-[#b91c1c] text-[#b91c1c] py-1 px-3 text-sm my-2  font-bold"
-                >
-                  Confirm
-                </button>
-                <button
-                  onClick={() => {
-                    setTableRemoval(false);
-                    setOverlay(false);
-                  }}
-                  className="border border-[#cbd5e1]  py-1 px-3 text-sm my-2 text-[#0369a1] font-bold"
-                >
-                  Cancel
-                </button>
-              </div>
-            </main>
-          </div>
+          <TableRemovalModal
+            activeTable={activeTable}
+            setTableRemoval={setTableRemoval}
+            setOverlay={setOverlay}
+            removeTable={removeTable}
+          />
         )}
+
         {/* =================== REMOVE TABLE MODAL ====== END ================= */}
       </main>
       {overlay && (

@@ -1,13 +1,14 @@
-import React from 'react';
-import NavbarTop from '../../components/navbars/NavbarTop';
-import { useSelector, useDispatch } from 'react-redux';
-import CircularProgress from '@mui/material/CircularProgress';
-import { useNavigate } from 'react-router-dom';
-import { listRooms } from '../../actions/tablesActions';
-import { listTables } from '../../actions/tablesActions';
-import { listActiveOrderDishes } from '../../actions/dishActions';
-import { listOrders } from '../../actions/ordersActions';
-import { GoListOrdered } from 'react-icons/go';
+import React from "react";
+import NavbarTop from "../../components/navbars/NavbarTop";
+import { useSelector, useDispatch } from "react-redux";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useNavigate } from "react-router-dom";
+import { listRooms } from "../../actions/tablesActions";
+import { listTables } from "../../actions/tablesActions";
+import { listActiveOrderDishes } from "../../actions/dishActions";
+import { listOrders } from "../../actions/ordersActions";
+import { GoListOrdered } from "react-icons/go";
+import { MdOutlineTableBar } from "react-icons/md";
 const Services = () => {
   let navigate = useNavigate();
   const dispatch = useDispatch();
@@ -15,21 +16,21 @@ const Services = () => {
   const { error, loading, userInfo } = userLogin;
   const buttonData = [
     {
-      label: 'Menu Management',
+      label: "Menu Management",
       onClick: () => {
-        navigate('/menu');
+        navigate("/menu");
       },
     },
     {
-      label: 'Employees Management',
+      label: "Employees Management",
       onClick: () => {
-        navigate('/employees');
+        navigate("/employees");
       },
     },
     {
-      label: 'Rooms Management',
+      label: "Rooms Management",
       onClick: () => {
-        navigate('/tablesList');
+        navigate("/tablesList");
         dispatch(listRooms());
         dispatch(listTables());
       },
@@ -39,7 +40,7 @@ const Services = () => {
   return loading ? (
     <CircularProgress color="secondary" />
   ) : error ? (
-    // WADOMOŚĆ  GDY HASŁO NIE PASUJE (LUB LOGIN)
+    // WADOMOŚĆ  GDY HASŁO NIE PASUJE (LUB LOGIN).
     <div>Ups! Password and login doesn`t match!</div>
   ) : (
     <main className=" flex flex-col items-center bg-secondary-bg-color h-screen">
@@ -56,7 +57,7 @@ const Services = () => {
                   dispatch(listTables());
                   dispatch(listRooms());
                   dispatch(listOrders());
-                  navigate('/tablesPanel');
+                  navigate("/tablesPanel");
                 }}
                 className="flex flex-col p-8 justify-center items-center  bg-white text-center rounded-xl shadow"
               >
@@ -66,7 +67,7 @@ const Services = () => {
               <button
                 onClick={() => {
                   dispatch(listActiveOrderDishes());
-                  navigate('/pending-orders');
+                  navigate("/pending-orders");
                 }}
                 className="flex flex-col p-8 justify-center items-center  bg-white text-center  rounded shadow"
               >
@@ -89,7 +90,6 @@ const Services = () => {
                   {button.label}
                 </button>
               ))}
-
             </div>
           </div>
         </div>
